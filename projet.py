@@ -1,10 +1,10 @@
 class patient():
     def __init__(self, nom, maladie, argent, poche, etat__sante):
         self.nom = nom
-        self.nom = maladie
-        self.nom = argent
-        self.nom = poche
-        self.nom = etat__sante
+        self.maladie = maladie
+        self.argent = argent
+        self.poche = poche
+        self.etat_sante = etat__sante
 
     def se_deplacer(self):
         print
@@ -12,11 +12,18 @@ class patient():
         print
     def payer(self):
         print
-
-
-patients1 = patient ("Marcus","Mal indenté",100,[],"malade")
-patients2 = patient ("Optimus","unsave",200,[],"malade")
-patients3 = patient ("Sangoku","404",80,[],"malade")
-patients4 = patient ("DarthVader","Azmatique",110,[],"malade")
-patients5 = patient ("Semicolon","syntaxError",60,[],"malade")
-
+    def afficher_info(self):
+        print(f"| {self.nom} | {self.maladie} | {self.argent} | {self.poche} | {self.etat_sante} |")
+#Initialisation
+marcus = patient ("Marcus","Mal indenté",100,[],"malade")
+optimus = patient ("Optimus","unsave",200,[],"malade")
+sangoku = patient ("Sangoku","404",80,[],"malade")
+darth_vader = patient ("DarthVader","Azmatique",110,[],"malade")
+semicolon = patient ("Semicolon","syntaxError",60,[],"malade")
+#Affichage informations patients
+print("| Nom    | Maladie      | Argent  | Poche   | Etat de santé    |")
+marcus.afficher_info()
+optimus.afficher_info()
+sangoku.afficher_info()
+darth_vader.afficher_info()
+semicolon.afficher_info()
