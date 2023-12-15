@@ -37,6 +37,11 @@ class Patient():
     def afficher_info(self):
         print(f"| {self.nom} | {self.maladie} | {self.argent} | {self.poche} | {self.etat_sante} |")
 
+    def cimetiere(self):
+        print(f"{self.nom} est mort de sa maladie. Il est poussé au cimetière.")
+        self.etat_sante = "Mort"
+
+
 class Docteur:
     def __init__(self ,nom ,argent ,cabinet ,diagnostique ,patient_in=None ,patient_out=None ):
         self.nom = nom
@@ -75,11 +80,18 @@ class Docteur:
 
     def sortie_patient(self):
         if self.patient_out:
-            print(f"{self.nom} fait sortir {self.patient_out.nom} de son cabinet.")
+            if self.patient_out.etat_sante == "En traitement":
+                print(f"{self.nom} fait sortir {self.patient_out.nom} de son cabinet. Le traitement continue.")
+            elif self.patient_out.etat_sante == "Mort":
+                print(f"{self.nom} fait sortir {self.patient_out.nom} de son cabinet. Malheureusement il meurt, faute de ne pas avoir su payer son traitement.")
             self.patient_out = None
 
         else:
             print("Aucun patient à faire sortir.")
+
+    def affiche_info_doc(self):
+        doctor_data = [[self.nom, self.argent, self.cabinet, self.diagnostique, self.patient_in, self.patient_out]]
+        print(tabulate(doctor_data, headers=["Nom", "Argent", "Cabinet", "Diagnostique", "Patient In", "Patient Out"], tablefmt="pretty"))
 
 #Class pharma
             
@@ -106,9 +118,14 @@ class Pharmacie:
             else:
                 print(f"{patient.nom} n'a pas assez d'argent pour acheter le traitement {traitement}.")
                 print(f"{patient.nom} est considéré mort et poussé au cimetière.")
+                patient.cimetiere()
                 return False
         else:
             print(f"Aucun tarif trouvé pour {traitement}.")
+
+    def affiche_info_pharma(self):
+        tarif_data = [[traitement, prix] for traitement, prix in self.tarifs_traitements.items()]
+        print(tabulate(tarif_data, headers=["Traitement", "Prix"], tablefmt="grid"))
 
 # Initialisation des patients
 patients = [
@@ -126,36 +143,28 @@ pharmacie = Pharmacie()
 # Simulation de l'achat de traitement par les patients
 traitements_patients = ["ctrl+maj+f", "saveOnFocusChange", "CheckLinkRelation", "Ventoline", "f12+doc"]
 
-print("| Nom       | Maladie         | Argent | Poche | État de Santé |")
-print("|-----------|-----------------|--------|-------|---------------|")
-patient_data = [[patient.nom, patient.maladie, patient.argent, patient.poche, patient.etat_sante] for patient in patients]
-print(tabulate(patient_data, headers=["Nom", "Maladie", "Argent", "Poche", "État de Santé"], tablefmt="grid"))
 
-doctor_data = [[debugger.nom, debugger.argent, debugger.cabinet, debugger.diagnostique, debugger.patient_in, debugger.patient_out]]
-print("| Nom       | Argent | Cabinet | Diagnostique | Patient In | Patient Out |")
-print("|-----------|--------|---------|--------------|------------|-------------|")
-print(tabulate(doctor_data, headers=["Nom", "Argent", "Cabinet", "Diagnostique", "Patient In", "Patient Out"], tablefmt="grid"))
-
-for patient in patients:
+for patient, traitement in zip(patients,traitements_patients):
     debugger.patient_in = patient
     debugger.diagnostiquer(patient)
     debugger.sortie_patient()
 
     doctor_data = [[debugger.nom, debugger.argent, debugger.cabinet, debugger.diagnostique, debugger.patient_in, debugger.patient_out]]
+    patient_data = [[p.nom, p.maladie, p.argent, p.poche, p.etat_sante] for p in patients]
 
-    print("| Nom       | Argent | Cabinet | Diagnostique | Patient In | Patient Out |")
-    print("|-----------|--------|---------|--------------|------------|-------------|")
-    print(tabulate(doctor_data, headers=["Nom", "Argent", "Cabinet", "Diagnostique", "Patient In", "Patient Out"], tablefmt="grid"))
+    complete_data = [[debugger.nom, debugger.argent, debugger.cabinet, debugger.diagnostique, debugger.patient_in, debugger.patient_out]] + [[p.nom, p.maladie, p.argent, p.poche, p.etat_sante] for p in patients]
 
-    patient.poche = traitements_patients[patients.index(patient)]
+    print(tabulate(complete_data, headers=["Nom", "Argent", "Cabinet", "Diagnostique", "Patient In", "Patient Out", "Maladie", "Argent", "Poche", "État de Santé"], tablefmt="grid"))
+
+    patient.poche = traitement
     pharmacie.vendre_traitement(patient)
 
-    # Mise à jour de la liste des données du docteur
+   # Mise à jour de la liste des données du docteur
     doctor_data = [[debugger.nom, debugger.argent, debugger.cabinet, debugger.diagnostique, debugger.patient_in, debugger.patient_out]]
-    
-    # Affichage des informations du docteur et des patients après chaque étape
-    print("| Nom       | Argent | Cabinet | Diagnostique | Patient In | Patient Out |")
-    print("|-----------|--------|---------|--------------|------------|-------------|")
-    print(tabulate(doctor_data, headers=["Nom", "Argent", "Cabinet", "Diagnostique", "Patient In", "Patient Out"], tablefmt="grid"))
+    patient_data = [[p.nom, p.maladie, p.argent, p.poche, p.etat_sante] for p in patients]
 
+    # Concaténez les données du docteur et des patients dans une seule liste
+    complete_data = [[debugger.nom, debugger.argent, debugger.cabinet, debugger.diagnostique, debugger.patient_in, debugger.patient_out]] + [[p.nom, p.maladie, p.argent, p.poche, p.etat_sante] for p in patients]
 
+    # Utilisez la bibliothèque tabulate pour afficher toutes les informations
+    print(tabulate(complete_data, headers=["Nom", "Argent", "Cabinet", "Diagnostique", "Patient In", "Patient Out", "Maladie", "Argent", "Poche", "État de Santé"], tablefmt="grid"))
