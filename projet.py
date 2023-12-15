@@ -131,20 +131,31 @@ print("|-----------|-----------------|--------|-------|---------------|")
 patient_data = [[patient.nom, patient.maladie, patient.argent, patient.poche, patient.etat_sante] for patient in patients]
 print(tabulate(patient_data, headers=["Nom", "Maladie", "Argent", "Poche", "État de Santé"], tablefmt="grid"))
 
-# Affichage des informations du docteur et des patients
+doctor_data = [[debugger.nom, debugger.argent, debugger.cabinet, debugger.diagnostique, debugger.patient_in, debugger.patient_out]]
 print("| Nom       | Argent | Cabinet | Diagnostique | Patient In | Patient Out |")
 print("|-----------|--------|---------|--------------|------------|-------------|")
+print(tabulate(doctor_data, headers=["Nom", "Argent", "Cabinet", "Diagnostique", "Patient In", "Patient Out"], tablefmt="grid"))
 
-#Simulation
 for patient in patients:
     debugger.patient_in = patient
     debugger.diagnostiquer(patient)
     debugger.sortie_patient()
+
+    doctor_data = [[debugger.nom, debugger.argent, debugger.cabinet, debugger.diagnostique, debugger.patient_in, debugger.patient_out]]
+
     print("| Nom       | Argent | Cabinet | Diagnostique | Patient In | Patient Out |")
     print("|-----------|--------|---------|--------------|------------|-------------|")
-    doctor_data = [[debugger.nom, debugger.argent, debugger.cabinet, debugger.diagnostique, debugger.patient_in, debugger.patient_out]]
     print(tabulate(doctor_data, headers=["Nom", "Argent", "Cabinet", "Diagnostique", "Patient In", "Patient Out"], tablefmt="grid"))
 
-for patient in patients:
     patient.poche = traitements_patients[patients.index(patient)]
     pharmacie.vendre_traitement(patient)
+
+    # Mise à jour de la liste des données du docteur
+    doctor_data = [[debugger.nom, debugger.argent, debugger.cabinet, debugger.diagnostique, debugger.patient_in, debugger.patient_out]]
+    
+    # Affichage des informations du docteur et des patients après chaque étape
+    print("| Nom       | Argent | Cabinet | Diagnostique | Patient In | Patient Out |")
+    print("|-----------|--------|---------|--------------|------------|-------------|")
+    print(tabulate(doctor_data, headers=["Nom", "Argent", "Cabinet", "Diagnostique", "Patient In", "Patient Out"], tablefmt="grid"))
+
+
