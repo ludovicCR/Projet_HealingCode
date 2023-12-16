@@ -25,18 +25,12 @@ class Patient():
 
     def cimetiere(self):
         print(f"{self.nom} est mort de sa maladie. Il est poussé au cimetière.")
-    
-    def take_pills(self):
-        print
-    
+
     def payer(self,montant):
         if self.argent >= montant:
             self.argent -= montant
             print(f"{self.nom} paie {montant}.")
     
-    def afficher_info(self):
-        print(f"| {self.nom} | {self.maladie} | {self.argent} | {self.poche} | {self.etat_sante} |")
-
     def cimetiere(self):
         print(f"{self.nom} est mort de sa maladie. Il est poussé au cimetière.")
         self.etat_sante = "Mort"
@@ -75,7 +69,7 @@ class Docteur:
         patient.etat_sante = "En traitement"
         self.payer_consultation(patient)
         self.prescrire_traitement(patient)
-        self.patient_out = patient
+        self.patient_out = patient.nom
         self.patient_in = None
 
     def sortie_patient(self):
@@ -84,6 +78,7 @@ class Docteur:
                 print(f"{self.nom} fait sortir {self.patient_out.nom} de son cabinet. Le traitement continue.")
             elif self.patient_out.etat_sante == "Mort":
                 print(f"{self.nom} fait sortir {self.patient_out.nom} de son cabinet. Malheureusement il meurt, faute de ne pas avoir su payer son traitement.")
+                patient.cimetiere()
             self.patient_out = None
 
         else:
@@ -92,6 +87,10 @@ class Docteur:
     def affiche_info_doc(self):
         doctor_data = [[self.nom, self.argent, self.cabinet, self.diagnostique, self.patient_in, self.patient_out]]
         print(tabulate(doctor_data, headers=["Nom", "Argent", "Cabinet", "Diagnostique", "Patient In", "Patient Out"], tablefmt="pretty"))
+
+    def afficher_salle_attente(self,patients_attente):
+        patient_data = [[p.nom, p.maladie, p.argent, p.poche, p.etat_sante] for p in patients_attente]
+        print(tabulate(patient_data, headers=["Nom", "Maladie", "Argent", "Poche", "État de Santé"], tablefmt="grid"))
 
 #Class pharma
             
@@ -114,11 +113,11 @@ class Pharmacie:
                 patient.argent -= prix_traitement
                 print(f"{patient.nom} a maintenant {patient.argent}€")
                 print (f"{patient.nom} prend le traitement et son état de santé s'améliore")
+                patient.cimetiere()
                 return True
             else:
                 print(f"{patient.nom} n'a pas assez d'argent pour acheter le traitement {traitement}.")
                 print(f"{patient.nom} est considéré mort et poussé au cimetière.")
-                patient.cimetiere()
                 return False
         else:
             print(f"Aucun tarif trouvé pour {traitement}.")
@@ -145,9 +144,13 @@ traitements_patients = ["ctrl+maj+f", "saveOnFocusChange", "CheckLinkRelation", 
 
 
 for patient, traitement in zip(patients,traitements_patients):
+    patient.se_rendre("cabinet")
     debugger.patient_in = patient
     debugger.diagnostiquer(patient)
     debugger.sortie_patient()
+
+    print("Salle d'attente :")
+    debugger.afficher_salle_attente(patients)
 
     doctor_data = [[debugger.nom, debugger.argent, debugger.cabinet, debugger.diagnostique, debugger.patient_in, debugger.patient_out]]
     patient_data = [[p.nom, p.maladie, p.argent, p.poche, p.etat_sante] for p in patients]
@@ -164,7 +167,8 @@ for patient, traitement in zip(patients,traitements_patients):
     patient_data = [[p.nom, p.maladie, p.argent, p.poche, p.etat_sante] for p in patients]
 
     # Concaténez les données du docteur et des patients dans une seule liste
-    complete_data = [[debugger.nom, debugger.argent, debugger.cabinet, debugger.diagnostique, debugger.patient_in, debugger.patient_out]] + [[p.nom, p.maladie, p.argent, p.poche, p.etat_sante] for p in patients]
+    complete_data = [[debugger.nom, debugger.argent, debugger.cabinet, debugger.diagnostique, debugger.patient_in.nom if debugger.patient_in else None, debugger.patient_out.nom if debugger.patient_out else None]] + [[p.nom, p.maladie, p.argent, p.poche, p.etat_sante] for p in patients]
 
     # Utilisez la bibliothèque tabulate pour afficher toutes les informations
     print(tabulate(complete_data, headers=["Nom", "Argent", "Cabinet", "Diagnostique", "Patient In", "Patient Out", "Maladie", "Argent", "Poche", "État de Santé"], tablefmt="grid"))
+
