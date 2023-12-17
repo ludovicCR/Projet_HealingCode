@@ -48,6 +48,7 @@ class Docteur:
         self.diagnostique = diagnostique
         self.patient_in = patient_in
         self.patient_out = patient_out
+        self.patients_attente = []
 
     def traiter_patient(self, patient):
         self.diagnostiquer(patient)
@@ -131,7 +132,7 @@ class Pharmacie:
         if patient.argent >= prix_traitement:
             return True
         else:
-            print(f"{patient.nom} n'a pas assez d'argent pour acheter le traitement {traitement}.")
+            print(f"{patient.nom} n'a pas assez d'argent pour acheter le traitement {patient.poche}.")
             print(f"{patient.nom} est considéré mort et poussé au cimetière.")
             patient.cimetiere()
             return False
@@ -156,9 +157,13 @@ patients = [
     Patient("semicolon", "syntaxError", 60, "vide", "malade"),
 ]
 
+# Initialisation du docteur
 debugger = Docteur("Debugger", 0, ["chat"], "-")
+
+# Ajout des patients en attente
 debugger.patients_attente = patients
 
+# Initialisation de la pharmacie
 pharmacie = Pharmacie()
 
 # Simulation du traitement des patients
@@ -174,5 +179,3 @@ for patient, traitement in zip(patients, traitements_patients):
 
     debugger.patient_out = patient
     debugger.affiche_info_doc()
-
-
